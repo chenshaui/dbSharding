@@ -21,7 +21,7 @@ import java.sql.Statement;
  * @Version 1.0
  */
 @Component
-public class SqlUtil {
+public class SqlUtil implements Proxy {
     @Autowired
     private DbConnect dbConnect;
     @Autowired
@@ -90,9 +90,21 @@ public class SqlUtil {
         int dblong = dbConfig.getDblong();
         String dbname = dbConfig.getDbname();
         String dbbelong = dbConfig.getDbbelong();
+        try {
+            //todo 表添加对应的实体类
+            //todo 获取对应的字段封装结果
+            Object o = Class.forName("").newInstance();
+            Proxy object = getObject(Proxy.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         for (int i = 1; i <= dblong; i++) {
             ResultSet resultSet = statement.executeQuery("select * from " + dbbelong + "." + dbname + "_" + i);
+
+
         }
+        return null;
     }
     /**
      * @Author chenshuai
@@ -114,7 +126,14 @@ public class SqlUtil {
         }
         return null;
     }
-    private <T> T getDBEntity(String entityName) throws Exception {
-        Class.forName("");
+
+    @Override
+    public <T> T getObject(Class<T> type) {
+
+        //通过动态代理生成了一个实现类，我们重点关注，动态代理的实现，它是一个 InvocationHandler，传入参数是 this，就是 sqlSession 的一个实例。
+        InvokeHandlerImpl invokeHandler = new InvokeHandlerImpl(this);
+        //给我一个接口，还你一个实现类
+        return (T) java.lang.reflect.Proxy.newProxyInstance(type.getClassLoader(),new Class[]{type},invokeHandler);
     }
+
 }
